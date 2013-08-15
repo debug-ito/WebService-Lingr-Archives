@@ -1,6 +1,9 @@
 
 requires "perl" => "v5.10.0";
 requires "Furl";
+requires "Carp";
+requires 'URI';
+requires "JSON";
 
 on 'test' => sub {
     requires 'Test::More';

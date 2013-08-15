@@ -93,7 +93,7 @@ sub mock_useragent {
     my $ua = Test::MockObject->new;
     $ua->mock('get', sub {
         my ($self, $url_str, $headers) = @_;
-        my $url = URI->new($url_str);
+        my $url = URI->new("$url_str");
         my %params = $url->query_form;
         my $handler = $HANDLERS{$url->path};
         if($handler) {

@@ -1,8 +1,78 @@
 package WebService::Lingr::Archives;
 use strict;
 use warnings;
+use 5.10.0;
+use Carp;
+use Furl;
+use URI;
+use JSON qw(decode_json);
 
 our $VERSION = '0.01';
+
+sub new {
+    my ($class, %args) = @_;
+    if(!defined($args{user})) {
+        croak "user parameter is mandatory";
+    }
+    if(!defined($args{password})) {
+        croak "password parameter is mandatory";
+    }
+    my $self = bless {
+        user_agent => $args{user_agent} // do {
+            my $ua = Furl->new;
+            $ua->env_proxy();
+            return $ua;
+        },
+        user => $args{user},
+        password => $args{password},
+        api_key => $args{api_key},
+        api_base => $args{api_base} // 'http://lingr.com/api',
+        session_id => undef,
+    }, $class;
+    $self->{api_base} =~ s{/+$}{};
+    return $self;
+}
+
+sub get_archives {
+    my ($self, $room, $options) = @_;
+    $options //= {};
+    if(!defined($room)) {
+        croak "room parameter is mandatory";
+    }
+    if(!defined($self->{session_id})) {
+        $self->_create_session();
+    }
+    my $result = $self->_get_request('/room/get_archives', [
+        session => $self->{session_id}, room => $room,
+        before => $options->{before} // 99999999,
+        (defined($options->{limit}) ? (limit => $options->{limit}) : ())
+    ]);
+    if(!defined($result->{status}) || lc($result->{status}) ne "ok") {
+        croak "Lingr API Error: code =  $result->{code}, detail = $result->{detail}";
+    }
+    return @{$result->{messages}};
+}
+
+sub _create_session {
+    my ($self) = @_;
+    my $result = $self->_get_request('/session/create', [user => $self->{user},
+                                                         password => $self->{password}]);
+    if(!defined($result->{status}) || lc($result->{status}) ne "ok") {
+        croak "Cannot create session with user $self->{user}";
+    }
+    $self->{session_id} = $result->{session};
+}
+
+sub _get_request {
+    my ($self, $endpoint, $params) = @_;
+    my $url = URI->new($self->{api_base} . $endpoint);
+    $url->query_form($params);
+    my $res = $self->{user_agent}->get($url);
+    if(!$res->is_success) {
+        croak "Error: " . $res->status_line;
+    }
+    return decode_json($res->content);
+}
 
 1;
 
