@@ -173,6 +173,10 @@ In failure, this method dies.
 
 =item *
 
+L<AnyEvent::Lingr> - Event-driven Lingr API client. Useful for interactive programs, like bots.
+
+=item *
+
 Lingr - L<http://lingr.com>
 
 =item *
