@@ -4,6 +4,7 @@ use Test::More;
 use FindBin;
 use lib ("$FindBin::RealBin");
 use testlib::MockLingr qw(mock_useragent);
+use Test::Exception;
 
 use WebService::Lingr::Archives;
 
@@ -15,11 +16,13 @@ my $PASS = $testlib::MockLingr::PASSWORD;
 my $ROOM = $testlib::MockLingr::ROOM;
 
 sub create_lingr {
-    my ($ua) = @_;
+    my ($ua, $other_params) = @_;
+    $other_params ||= {};
     return WebService::Lingr::Archives->new(
         user => $USER,
         password => $PASS,
-        user_agent => $ua
+        %$other_params,
+        user_agent => $ua,
     );
 }
 
@@ -53,8 +56,40 @@ foreach my $case (
     is($method, undef, "no more call");
 }
 
-fail("TODO: email address as user param");
-fail("TODO: test api_key, api_base param");
+{
+    note("--- email address as user param");
+    my $ua = mock_useragent();
+    my $lingr = create_lingr($ua, {
+        user => 'hoge@hogehoge.com',
+    });
+    dies_ok { $lingr->get_archives($ROOM) } 'get_archives() dies with invalid user/pass';
+    my ($method, $args) = $ua->next_call();
+    is($method, "get", "request method OK");
+    is($args->[1],
+       'http://lingr.com/api/session/create?user=hoge%40hogehoge.com&password='.$PASS,
+       'request URL OK');
+}
+
+{
+    note('--- app_key and api_base');
+    my $ua = mock_useragent();
+    my $lingr = create_lingr($ua, {
+        app_key => "hogehoge_key",
+        api_base => 'http://my.lingr.org/api/'
+    });
+    $lingr->get_archives($ROOM, {before => 100});
+    my ($method, $args) = $ua->next_call();
+    is($method, "get", "request method ok");
+    is($args->[1], "http://my.lingr.org/api/session/create?user=$USER&password=$PASS&app_key=hogehoge_key", "session create URL OK");
+    
+    ($method, $args) = $ua->next_call();
+    is($method, "get", "request method OK");
+    is($args->[1], "http://my.lingr.org/api/room/get_archives?session=$SID&room=$ROOM&before=100", "get_archives URL OK");
+
+    ($method, $args) = $ua->next_call();
+    ok(!defined($method), "no more call");
+}
+
 
 done_testing();
 

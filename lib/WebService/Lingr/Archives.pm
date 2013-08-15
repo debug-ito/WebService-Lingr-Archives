@@ -25,7 +25,7 @@ sub new {
         },
         user => $args{user},
         password => $args{password},
-        api_key => $args{api_key},
+        app_key => $args{app_key},
         api_base => $args{api_base} // 'http://lingr.com/api',
         session_id => undef,
     }, $class;
@@ -56,9 +56,10 @@ sub get_archives {
 sub _create_session {
     my ($self) = @_;
     my $result = $self->_get_request('/session/create', [user => $self->{user},
-                                                         password => $self->{password}]);
+                                                         password => $self->{password},
+                                                         (defined($self->{app_key}) ? (app_key => $self->{app_key}) : ())]);
     if(!defined($result->{status}) || lc($result->{status}) ne "ok") {
-        croak "Cannot create session with user $self->{user}";
+        croak "Cannot create session with user $self->{user}: $result->{code}, $result->{detail}";
     }
     $self->{session_id} = $result->{session};
 }
@@ -69,7 +70,7 @@ sub _get_request {
     $url->query_form($params);
     my $res = $self->{user_agent}->get($url);
     if(!$res->is_success) {
-        croak "Error: " . $res->status_line;
+        croak "Network Error: " . $res->status_line;
     }
     return decode_json($res->content);
 }
@@ -92,7 +93,7 @@ WebService::Lingr::Archives - load archived messages from lingr.com
     my $lingr = WebService::Lingr::Archives->new(
         user     => "your lingr username",
         password => "your lingr password",
-        api_key  => "your lingr API key",  ## optional
+        app_key  => "your lingr App key",  ## optional
     );
    
     my @messages = $lingr->get_archives("perl_jp", {limit => 100});
@@ -126,9 +127,9 @@ Username for your Lingr account.
 
 Password for your Lingr account.
 
-=item C<api_key> => STR (optional)
+=item C<app_key> => STR (optional)
 
-Lingr API key.
+Lingr App key. Although it's not required, you can register your app in L<http://lingr.com/developer>.
 
 =item C<api_base> => STR (optional, default: "http://lingr.com/api")
 
