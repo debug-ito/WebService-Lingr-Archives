@@ -82,7 +82,7 @@ __END__
 
 =head1 NAME
 
-WebService::Lingr::Archives - archives loader from lingr.com
+WebService::Lingr::Archives - load archived messages from lingr.com
 
 =head1 SYNOPSIS
 
