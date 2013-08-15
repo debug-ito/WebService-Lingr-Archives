@@ -64,7 +64,7 @@ Lingr API key.
 
 API base URL.
 
-=item C<user_agent> => OBJECT (optional, default: L<LWP::UserAgent> with env_proxy() called)
+=item C<user_agent> => OBJECT (optional, default: L<Furl> with env_proxy() called)
 
 HTTP UserAgent object to access the API.
 
