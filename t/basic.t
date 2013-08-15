@@ -54,6 +54,7 @@ foreach my $case (
 }
 
 fail("TODO: email address as user param");
+fail("TODO: test api_key param");
 
 done_testing();
 

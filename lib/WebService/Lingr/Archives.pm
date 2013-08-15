@@ -21,7 +21,7 @@ sub new {
         user_agent => $args{user_agent} // do {
             my $ua = Furl->new;
             $ua->env_proxy();
-            return $ua;
+            $ua;
         },
         user => $args{user},
         password => $args{password},
