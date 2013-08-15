@@ -1,9 +1,8 @@
 use strict;
 use warnings;
 use Test::More;
-use FindBin;
-use lib ("$FindBin::RealBin");
-use testlib::MockLingr qw(mock_useragent);
+use lib ("t");
+use testlib::MockLingr qw(mock_useragent create_lingr);
 use Test::Exception;
 
 use WebService::Lingr::Archives;
@@ -14,17 +13,6 @@ my $SID = $testlib::MockLingr::SESSION_ID;
 my $USER = $testlib::MockLingr::USERNAME;
 my $PASS = $testlib::MockLingr::PASSWORD;
 my $ROOM = $testlib::MockLingr::ROOM;
-
-sub create_lingr {
-    my ($ua, $other_params) = @_;
-    $other_params ||= {};
-    return WebService::Lingr::Archives->new(
-        user => $USER,
-        password => $PASS,
-        %$other_params,
-        user_agent => $ua,
-    );
-}
 
 foreach my $case (
     {label => "no option", options => [], exp_max_id => $testlib::MockLingr::MAX_MESSAGE_ID,

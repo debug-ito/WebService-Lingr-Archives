@@ -9,8 +9,9 @@ use Furl::Response;
 use JSON;
 use Try::Tiny;
 use List::Util qw(min max);
+use WebService::Lingr::Archives;
 
-our @EXPORT_OK = qw(mock_useragent);
+our @EXPORT_OK = qw(mock_useragent create_lingr);
 
 our $USERNAME = "hoge";
 our $PASSWORD = "password";
@@ -120,6 +121,17 @@ sub _create_message {
         timestamp => "2013-08-10T10:11:12Z",
         local_id => undef
     };
+}
+
+sub create_lingr {
+    my ($ua, $other_params) = @_;
+    $other_params ||= {};
+    return WebService::Lingr::Archives->new(
+        user => $USERNAME,
+        password => $PASSWORD,
+        %$other_params,
+        user_agent => $ua,
+    );
 }
 
 

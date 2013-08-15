@@ -1,7 +1,6 @@
 use strict;
 use warnings;
-use FindBin;
-use lib ("$FindBin::RealBin");
+use lib ("t");
 use Test::More;
 use testlib::MockLingr qw(mock_useragent);
 use WebService::Lingr::Archives;

@@ -8,7 +8,6 @@ requires "JSON";
 on 'test' => sub {
     requires 'Test::More';
     requires 'Test::Exception';
-    requires "FindBin";
     requires "Exporter";
     requires "Test::MockObject";
     requires "URI";
