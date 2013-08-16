@@ -39,8 +39,10 @@ sub get_archives {
     if(!defined($room)) {
         croak "room parameter is mandatory";
     }
+    my $retry_allowed = 1;
     if(!defined($self->{session_id})) {
         $self->_create_session();
+        $retry_allowed = 0;
     }
     my $result = $self->_get_request('/room/get_archives', [
         session => $self->{session_id}, room => $room,
@@ -48,6 +50,10 @@ sub get_archives {
         (defined($options->{limit}) ? (limit => $options->{limit}) : ())
     ]);
     if(!defined($result->{status}) || lc($result->{status}) ne "ok") {
+        if($retry_allowed) {
+            $self->{session_id} = undef;
+            return $self->get_archives($room, $options);
+        }
         croak "Lingr API Error: code =  $result->{code}, detail = $result->{detail}";
     }
     return @{$result->{messages}};
