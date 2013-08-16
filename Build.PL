@@ -1,26 +1,25 @@
-use 5.006;
+use 5.10.0;
 use strict;
 use warnings FATAL => 'all';
-use Module::Build;
+use Module::Build::Pluggable (
+    'CPANfile'
+);
 
-my $builder = Module::Build->new(
+my $builder = Module::Build::Pluggable->new(
     module_name         => 'WebService::Lingr::Archives',
-    license             => 'Artistic_2_0',
+    license             => 'perl',
     dist_author         => q{Toshio Ito <toshioito@cpan.org>},
     dist_version_from   => 'lib/WebService/Lingr/Archives.pm',
     release_status      => 'stable',
-    configure_requires => {
-        'Module::Build' => 0,
-    },
-    build_requires => {
-        'Test::More' => 0,
-    },
-    requires => {
-        #'ABC'              => 1.6,
-        #'Foo::Bar::Module' => 5.0401,
-    },
     add_to_cleanup     => [ 'WebService-Lingr-Archives-*' ],
-    create_makefile_pl => 'traditional',
+    no_index => {
+        directory => ["t", "xt", "eg", "inc"]
+    },
+    meta_add => {
+        resources => {
+            repository => 'git://github.com/debug-ito/WebService-Lingr-Archives.git'
+        }
+    }
 );
 
 $builder->create_build_script();
