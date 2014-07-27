@@ -1,10 +1,10 @@
-use 5.10.0;
+use 5.006;
 use strict;
-use warnings FATAL => 'all';
+use warnings;
 use Module::Build::Pluggable (
     'CPANfile'
 );
-
+ 
 my $builder = Module::Build::Pluggable->new(
     module_name         => 'WebService::Lingr::Archives',
     license             => 'perl',
@@ -12,14 +12,26 @@ my $builder = Module::Build::Pluggable->new(
     dist_version_from   => 'lib/WebService/Lingr/Archives.pm',
     release_status      => 'stable',
     add_to_cleanup     => [ 'WebService-Lingr-Archives-*' ],
+    recursive_test_files => 1,
     no_index => {
-        directory => ["t", "xt", "eg", "inc"]
+        directory => ["t", "xt", "eg", "inc"],
+        file => ['README.pod'],
     },
     meta_add => {
+        'meta-spec' => {
+            version => 2,
+            url => 'https://metacpan.org/pod/CPAN::Meta::Spec',
+        },
         resources => {
-            repository => 'git://github.com/debug-ito/WebService-Lingr-Archives.git'
+            bugtracker => {
+                web => 'https://github.com/debug-ito/WebService-Lingr-Archives/issues',
+            },
+            repository => {
+                url => 'git://github.com/debug-ito/WebService-Lingr-Archives.git',
+                web => 'https://github.com/debug-ito/WebService-Lingr-Archives',
+            },
         }
     }
 );
-
+ 
 $builder->create_build_script();
