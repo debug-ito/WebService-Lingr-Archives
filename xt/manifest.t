@@ -1,11 +1,13 @@
-#!perl -T
 use 5.006;
 use strict;
-use warnings FATAL => 'all';
+use warnings;
 use Test::More;
+ 
+use Test::CheckManifest;
 
-my $min_tcm = 0.9;
-eval "use Test::CheckManifest $min_tcm";
-plan skip_all => "Test::CheckManifest $min_tcm required" if $@;
-
+unless($ENV{RELEASE_TESTING}) {
+    plan(skip_all => "Set RELEASE_TESTING environment variable to test MANIFEST");
+}
+ 
 ok_manifest();
+done_testing;

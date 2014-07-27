@@ -5,7 +5,8 @@ use warnings;
 use Exporter qw(import);
 use Test::MockObject;
 use URI;
-use Furl::Response;
+use HTTP::Response;
+use HTTP::Headers;
 use JSON;
 use Try::Tiny;
 use List::Util qw(min max);
@@ -82,10 +83,10 @@ sub _error_response {
 
 sub _success_response {
     my ($result_obj) = @_;
-    return Furl::Response->new(
-        0, 200, "OK", {
+    return HTTP::Response->new(
+        200, "OK", HTTP::Headers->new(
             "Content-Type" => "application/json;charset=UTF-8"
-        },
+        ),
         encode_json($result_obj)
     );
 }
@@ -100,8 +101,8 @@ sub mock_useragent {
         if($handler) {
             return $handler->(\%params);
         }else {
-            return Furl::Response->new(
-                0, 404, "Not Found", [], ""
+            return HTTP::Response->new(
+                404, "Not Found", undef, ""
             );
         }
     });

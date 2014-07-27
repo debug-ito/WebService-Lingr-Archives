@@ -1,5 +1,5 @@
 requires 'perl', '5.010';
-requires 'Furl', '2.18';
+requires 'LWP::UserAgent', '0';
 requires 'JSON', '2.53';
 requires 'URI',  '1.59';
 requires "Carp";
