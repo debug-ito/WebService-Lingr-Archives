@@ -5,4 +5,4 @@ perl:
   - "5.14"
   - "5.16"
   - "5.18"
-script: "cpanm --test-only ."
+script: "cpanm --test-only --verbose ."
